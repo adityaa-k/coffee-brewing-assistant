@@ -9,12 +9,8 @@ export const blogPosts = [
     author: 'CBA Team',
     date: 'June 28, 2025',
     featuredImage: '/iced-pour-over.png',
-<<<<<<< HEAD
     content: `
 There's a quiet elegance to the Japanese method of brewing iced coffee. Unlike cold brew, which steeps for hours and often results in a smooth but one-dimensionally chocolatey flavor, the iced pour-over method is a **vibrant, immediate celebration of the coffee bean itself.**
-=======
-    content: `There's a quiet elegance to the Japanese method of brewing iced coffee. Unlike cold brew, which steeps for hours and often results in a smooth but one-dimensionally chocolatey flavor, the iced pour-over method is a vibrant, immediate celebration of the coffee bean itself.
->>>>>>> b6d59e9c9d22a845677256cc110fba39ebf727cc
 
 ### The Magic is in the Method
 
@@ -39,12 +35,8 @@ By controlling these variables, you are not just making cold coffee; you are cra
     author: 'CBA Team',
     date: 'June 22, 2025',
     featuredImage: '/grind-size.png',
-<<<<<<< HEAD
     content: `
 Of all the variables in coffee brewing, none has a more dramatic impact on the final taste than **grind size**. It is the single most powerful tool a home brewer has to dial in their recipe. Too coarse, and your coffee will be weak, sour, and under-extracted. Too fine, and you'll end up with a bitter, harsh, and over-extracted brew.
-=======
-    content: `Of all the variables in coffee brewing, none has a more dramatic impact on the final taste than grind size. It is the single most powerful tool a home brewer has to dial in their recipe. Too coarse, and your coffee will be weak, sour, and under-extracted. Too fine, and you'll end up with a bitter, harsh, and over-extracted brew.
->>>>>>> b6d59e9c9d22a845677256cc110fba39ebf727cc
 
 ### Understanding Extraction
 
