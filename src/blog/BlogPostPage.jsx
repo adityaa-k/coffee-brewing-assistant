@@ -1,0 +1,84 @@
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import { blogPosts } from './blogPosts.js';
+
+const BlogPostPage = ({ slug }) => {
+  const post = blogPosts.find(p => p.slug === slug);
+
+  if (!post) {
+    return (
+        <div className="text-center py-20 container mx-auto max-w-5xl p-4">
+            <h1 className="text-4xl font-bold">Post Not Found</h1>
+            <p className="mt-4 text-brand-brown/80">Sorry, we couldn't find the article you were looking for.</p>
+        </div>
+    );
+  }
+  
+  // Create JSON-LD schema for the article, crucial for SEO and AI Overviews.
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": post.title,
+    "author": {
+      "@type": "Organization",
+      "name": "Coffee Brewing Assistant"
+    },
+    "datePublished": new Date(post.date).toISOString(),
+    "image": post.featuredImage,
+    "description": post.description,
+    "articleBody": post.content.replace(/###/g, '') // Clean content for schema
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>{`${post.title} | CBA Blog`}</title>
+        <meta name="description" content={post.description} />
+        <script type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      </Helmet>
+      
+      <article className="container mx-auto max-w-3xl p-4">
+        <header className="text-center mb-12">
+          <p className="text-base text-brand-brown/80 mb-2">{post.date}</p>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-brand-brown tracking-tight">{post.title}</h1>
+          <p className="mt-4 text-xl text-brand-brown/80">{post.author}</p>
+        </header>
+        
+        <div className="overflow-hidden rounded-2xl shadow-lg mb-12">
+          <img src={post.featuredImage} alt={post.title} className="w-full h-auto" />
+        </div>
+
+        <div className="prose lg:prose-xl max-w-none text-brand-brown/90 leading-relaxed space-y-6">
+          {post.content.split('\n').map((paragraph, index) => {
+            if (paragraph.startsWith('### ')) {
+              return <h3 key={index} className="text-3xl font-bold text-brand-brown !mt-12 !mb-4">{paragraph.substring(4)}</h3>;
+            }
+            if (paragraph.trim() === '') {
+              return null; // Don't render empty paragraphs
+            }
+            return <p key={index}>{paragraph}</p>;
+          })}
+        </div>
+        
+        {/* Example of how to embed a video */}
+        <div className="my-16">
+          <h3 className="text-3xl font-bold text-brand-brown mb-4 text-center">Watch: The Iced Pour-Over Technique</h3>
+          <div className="aspect-video rounded-2xl overflow-hidden shadow-lg bg-black">
+            <iframe 
+              src="https://www.youtube.com/embed/PApBycDrPo0" 
+              title="YouTube video player" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
+          </div>
+        </div>
+      </article>
+    </>
+  );
+};
+
+export default BlogPostPage;
