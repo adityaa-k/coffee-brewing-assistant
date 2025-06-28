@@ -12,7 +12,7 @@ export const blogPosts = [
     description: 'Discover the science and flavor behind brewing hot coffee directly over ice, and why it might be the best way to enjoy a complex cold coffee.',
     author: 'CBA Team',
     date: 'June 28, 2025',
-    featuredImage: 'https://images.unsplash.com/photo-1629906612399-5154d65545a9?q=80&w=1964&auto=format&fit=crop',
+    featuredImage: 'iced-pour-over.png',
     content: `There's a quiet elegance to the Japanese method of brewing iced coffee. Unlike cold brew, which steeps for hours and often results in a smooth but one-dimensionally chocolatey flavor, the iced pour-over method is a vibrant, immediate celebration of the coffee bean itself.
 
 ### The Magic is in the Method
@@ -33,7 +33,7 @@ By controlling these variables, you are not just making cold coffee; you are cra
     description: 'Dive deep into the most critical variable you can control. Learn how a simple adjustment to your grinder can take your coffee from good to unforgettable.',
     author: 'CBA Team',
     date: 'June 22, 2025',
-    featuredImage: 'https://images.unsplash.com/photo-1507135946294-8a933221b1a3?q=80&w=1974&auto=format&fit=crop',
+    featuredImage: '/grind-size.png',
     content: `Of all the variables in coffee brewing, none has a more dramatic impact on the final taste than grind size. It is the single most powerful tool a home brewer has to dial in their recipe. Too coarse, and your coffee will be weak, sour, and under-extracted. Too fine, and you'll end up with a bitter, harsh, and over-extracted brew.
 
 ### Understanding Extraction
