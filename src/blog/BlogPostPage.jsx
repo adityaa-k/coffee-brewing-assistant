@@ -1,6 +1,8 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { blogPosts } from './blogPosts.js';
 
 const BlogPostPage = () => {
@@ -25,7 +27,7 @@ const BlogPostPage = () => {
     "datePublished": new Date(post.date).toISOString(),
     "image": post.featuredImage,
     "description": post.description,
-    "articleBody": post.content.replace(/###/g, '')
+    "articleBody": post.content
   };
 
   return (
@@ -47,31 +49,12 @@ const BlogPostPage = () => {
           <img src={post.featuredImage} alt={post.title} className="w-full h-auto" />
         </div>
 
-        <div className="prose lg:prose-xl max-w-none text-brand-brown/90 leading-relaxed space-y-6">
-          {post.content.split('\n').map((paragraph, index) => {
-            if (paragraph.startsWith('### ')) {
-              return <h3 key={index} className="text-3xl font-bold text-brand-brown !mt-12 !mb-4">{paragraph.substring(4)}</h3>;
-            }
-            if (paragraph.trim() === '') {
-              return null;
-            }
-            return <p key={index}>{paragraph}</p>;
-          })}
+        <div className="prose lg:prose-xl max-w-none text-brand-brown/90 leading-relaxed">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {post.content}
+          </ReactMarkdown>
         </div>
         
-        <div className="my-16">
-          <h3 className="text-3xl font-bold text-brand-brown mb-4 text-center">Watch: The Iced Pour-Over Technique</h3>
-          <div className="aspect-video rounded-2xl overflow-hidden shadow-lg bg-black">
-            <iframe 
-              src="https://www.youtube.com/embed/PApBycDrPo0" 
-              title="YouTube video player" 
-              frameBorder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowFullScreen
-              className="w-full h-full"
-            ></iframe>
-          </div>
-        </div>
       </article>
     </>
   );
