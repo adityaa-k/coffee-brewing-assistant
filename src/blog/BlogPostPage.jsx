@@ -1,32 +1,31 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { blogPosts } from './blogPosts.js';
 
-const BlogPostPage = ({ slug }) => {
+const BlogPostPage = () => {
+  const { slug } = useParams();
   const post = blogPosts.find(p => p.slug === slug);
 
   if (!post) {
     return (
         <div className="text-center py-20 container mx-auto max-w-5xl p-4">
+            <Helmet><title>Post Not Found | CBA</title></Helmet>
             <h1 className="text-4xl font-bold">Post Not Found</h1>
             <p className="mt-4 text-brand-brown/80">Sorry, we couldn't find the article you were looking for.</p>
         </div>
     );
   }
   
-  // Create JSON-LD schema for the article, crucial for SEO and AI Overviews.
   const schema = {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": post.title,
-    "author": {
-      "@type": "Organization",
-      "name": "Coffee Brewing Assistant"
-    },
+    "author": { "@type": "Organization", "name": "Coffee Brewing Assistant" },
     "datePublished": new Date(post.date).toISOString(),
     "image": post.featuredImage,
     "description": post.description,
-    "articleBody": post.content.replace(/###/g, '') // Clean content for schema
+    "articleBody": post.content.replace(/###/g, '')
   };
 
   return (
@@ -34,9 +33,7 @@ const BlogPostPage = ({ slug }) => {
       <Helmet>
         <title>{`${post.title} | CBA Blog`}</title>
         <meta name="description" content={post.description} />
-        <script type="application/ld+json">
-          {JSON.stringify(schema)}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </Helmet>
       
       <article className="container mx-auto max-w-3xl p-4">
@@ -56,13 +53,12 @@ const BlogPostPage = ({ slug }) => {
               return <h3 key={index} className="text-3xl font-bold text-brand-brown !mt-12 !mb-4">{paragraph.substring(4)}</h3>;
             }
             if (paragraph.trim() === '') {
-              return null; // Don't render empty paragraphs
+              return null;
             }
             return <p key={index}>{paragraph}</p>;
           })}
         </div>
         
-        {/* Example of how to embed a video */}
         <div className="my-16">
           <h3 className="text-3xl font-bold text-brand-brown mb-4 text-center">Watch: The Iced Pour-Over Technique</h3>
           <div className="aspect-video rounded-2xl overflow-hidden shadow-lg bg-black">
