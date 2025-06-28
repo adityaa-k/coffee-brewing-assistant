@@ -12,7 +12,7 @@ export const blogPosts = [
     description: 'Discover the science and flavor behind brewing hot coffee directly over ice, and why it might be the best way to enjoy a complex cold coffee.',
     author: 'CBA Team',
     date: 'June 28, 2025',
-    featuredImage: 'iced-pour-over.png',
+    featuredImage: '/iced-pour-over.png',
     content: `There's a quiet elegance to the Japanese method of brewing iced coffee. Unlike cold brew, which steeps for hours and often results in a smooth but one-dimensionally chocolatey flavor, the iced pour-over method is a vibrant, immediate celebration of the coffee bean itself.
 
 ### The Magic is in the Method
