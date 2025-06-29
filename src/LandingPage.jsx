@@ -68,6 +68,13 @@ const LandingPage = () => {
             </div>
             </section>
 
+            {/* --- NEW SECTION STARTS HERE --- */}
+            <section className="py-16 text-center max-w-3xl mx-auto">
+              <h2 className="text-4xl font-extrabold text-brand-brown">{content.newSection.title}</h2>
+              <p className="mt-4 text-lg text-brand-brown/80">{content.newSection.paragraph}</p>
+            </section>
+            {/* --- NEW SECTION ENDS HERE --- */}
+
             <section className="py-16">
             <div className="text-center max-w-3xl mx-auto">
                 <p className="text-3xl font-light italic text-brand-brown">"{content.testimonial.quote}"</p>

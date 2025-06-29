@@ -1,0 +1,6 @@
+# Allow all web crawlers full access to the site.
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://coffeebrewingassistant.com/sitemap.xml

@@ -1,32 +1,36 @@
 {
   "hero": {
     "headline": "Stop Guessing. Start Brewing.",
-    "subheadline": "Welcome to the Coffee Brewing Assistant, your friendly guide to the perfect cup. Whether you're a beginner or a seasoned barista, our adaptive recipes and step-by-step guides empower you to brew with confidence.",
+    "subheadline": "Welcome to Coffee Brewing Assistant, your friendly guide on the journey to your perfect cup. Whether you're just starting out or already a seasoned home barista, we're here to simplify your brewing process.",
     "ctaButton": "Enter the App"
   },
   "features": [
     {
       "icon": "Zap",
       "title": "Adaptive Recipes",
-      "description": "Our app doesn't use static recipes. It intelligently calculates the ideal water, coffee, and timing based on your preferences for a perfect extraction every time."
+      "description": "Intelligent recipes personalized to your brew style-perfect extraction every time."
     },
     {
       "icon": "Timer",
       "title": "Guided Brewing",
-      "description": "Never miss a step. From pre-heating your kettle to the final swirl, our interactive timer and checklist guide you through every moment of the brewing process."
+      "description": "Step-by-step timers and clear instructions, no guessing, just perfect coffee."
     },
     {
       "icon": "SlidersHorizontal",
-      "title": "Complete Customization",
-      "description": "Your coffee, your rules. Tweak every variable, from coffee-to-water ratios to individual pour durations, and save your perfect recipe for next time."
+      "title": "Fully Customizable",
+      "description": "Adjust ratios, pours and every variable. Brew exactly your way, every time."
     }
   ],
+  "newSection": {
+    "title": "Built by the Community, for the Community",
+    "paragraph": "This app started as a personal project inspired by conversations and feedback from the coffee brewing community. Every feature is designed with your feedback in mind."
+  },
   "testimonial": {
     "quote": "This is the tool I wish I had when I started my coffee journey. It’s like having a patient, knowledgeable barista friend right in your pocket.",
     "author": "A Happy Home Brewer"
   },
   "finalCta": {
-    "headline": "Ready to brew your best coffee yet?",
+    "headline": "Ready to craft your best cup yet?",
     "ctaButton": "Start Your First Brew"
   }
 }

@@ -3,6 +3,99 @@
 
 export const blogPosts = [
   {
+    slug: 'iced-v60-grind-size-mistake',
+    title: 'Why Your Iced V60 Tastes Off (and How I Fixed It)',
+    description: 'Learn how grind size ruined my iced V60 using Fraction 9s Honeycrust & what to do differently to avoid sour, under-extracted flash chilled coffee.',
+    author: 'CBA Team',
+    date: 'June 29, 2025',
+    featuredImage: '/iced-v60-grind-size.png',
+    content: `
+### A Grind Size Lesson with Fraction 9s Honeycrust
+
+---
+
+**TL;DR:**  
+Brewed an iced V60 using Fraction 9s Honeycrust at 63 clicks. It tasted bad, sour and under-extracted. The culprit? Coarse grind size. Lesson learned: go finer. Read on to avoid the same mistake.
+
+---
+
+### A Fresh Bag and a Bold Plan
+
+I recently ordered **Whole Bean Honeycrust** from *Fraction 9*,  a **100% Arabica** grown at **Kalyancool Estate, Chikmagalur (1300m)**. With its **light-plus roast**, its perfect for flash-chilled brews or iced V60 recipes.
+
+To dial in the best cup, I planned to **start with a coarse grind** and move finer with each brew.
+
+*Bad idea to start at 63 clicks.* More on that soon.
+
+---
+
+### Brew Setup: The Numbers
+
+* **Beans:** 20g  
+* **Grind Setting:** 63 clicks using Kingrinder P2  
+* **Water:** 200g  
+* **Ice:** 133g  
+* **Method:** 4 pours of 50g, 45 seconds apart  
+* **App Used:** [CoffeeBrewingAssistant.com](https://coffeebrewingassistant.com/)
+
+> **Pro tip:** For iced V60, I use 20g coffee instead of the usual 15g I use for hot.
+
+---
+
+### The Moment I Knew I Messed Up
+
+> As I poured the first bloom, the water drained straight through.  
+> Thats when I knew: **the grind was way too coarse.**
+
+Still, I followed through. I chilled the brew and took a sip. It was bad, **very sour, hollow, and under-extracted.**
+
+---
+
+### What Went Wrong?
+
+If your **bloom water drops straight into the server**, your grind is too coarse.
+
+* It doesnt allow enough contact time.  
+* The coffee bed doesnt saturate properly.  
+* The result? A watery, acidic cup lacking depth.
+
+---
+
+### What I will Try Next
+
+I will grind **finer next time — around 50 to 55 clicks** on the Kingrinder P2. This should slow the drawdown and allow proper extraction.
+
+> Every bad brew is just a stepping stone to your next great cup.
+
+Stay tuned! I will update you with results in my next blog.
+
+---
+
+### Key Takeaway
+
+> **If your iced V60 tastes sour or underwhelming, dont panic.**  
+> Its probably your grind size. Go finer and test again.
+
+---
+
+### FAQs
+
+**Q1: Why does my iced V60 coffee taste sour or weak?**  
+Because its likely under-extracted. Try a **finer grind size** and ensure you're using correct ratios.
+
+**Q2: What grind size is best for iced V60 using Kingrinder P2?**  
+Start between **50-55 clicks** for light roasts. Adjust by taste and flow rate.
+
+**Q3: Why is my V60 brew water draining too fast?**  
+That usually means your grind is **too coarse**. Try grinding finer for better flavor extraction.
+
+**Q4: How much coffee and water should I use for a single-person iced V60?**  
+Use **20g coffee**, **200g brew water**, and **133g ice** for a bright and balanced brew.
+
+
+`
+},
+  {
     slug: 'why-iced-pour-over-is-the-best',
     title: 'The Art of the Chill: Why Iced Pour-Over Reigns Supreme',
     description: 'Discover the science and flavor behind brewing hot coffee directly over ice, and why it might be the best way to enjoy a complex cold coffee.',
