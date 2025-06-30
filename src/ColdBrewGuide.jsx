@@ -164,25 +164,22 @@ function ColdBrewGuide() {
 
             <Card>
                 <h3 className="text-xl font-bold text-brand-brown mb-4">3. Grind Your Coffee</h3>
-                <div className="md:flex gap-6 items-center">
-                    <div className="flex-1">
-                        <p className="text-brand-brown/90 mb-2">Recommended grind setting for cold brew is <strong>medium-coarse to coarse</strong>.</p>
-                        <p className="text-sm text-brand-brown/70 mb-4">For the tech-savvy, that's a particle size in the 1100-1140μm range. This prevents a muddy, over-extracted brew and makes filtering easier.</p>
-                         <div className="flex-shrink-0 mt-4 md:mt-0">
-                        <img src="/cold-brew-grind.png" alt="A close-up photo showing the ideal coarse grind size for cold brew coffee, similar in texture to coarse sea salt." className="w-full md:w-40 h-auto rounded-lg shadow-md" />
-                    </div>
-                        <form name="grinder-submission" onSubmit={handleGrinderSubmit} data-netlify="true">
-                            <input type="hidden" name="form-name" value="grinder-submission" />
-                            <label className="block text-sm font-medium text-brand-brown/80 mb-1">To help us build a grind size guide, what grinder do you use?</label>
-                            <div className="flex gap-2">
-                                <input type="text" name="grinder" value={grinderInfo} onChange={(e) => setGrinderInfo(e.target.value)} placeholder="e.g., Timemore C3, Baratza Encore" className="w-full p-2 bg-brand-brown/10 rounded-lg border-transparent focus:border-brand-tan focus:ring-0" />
-                                <button type="submit" className="px-4 py-2 bg-brand-tan text-brand-brown font-bold rounded-lg shadow-sm hover:bg-brand-tan/80 transition-colors">Submit</button>
-                            </div>
-                        </form>
-                        {grinderStatus && <p className="text-sm text-brand-green mt-2">{grinderStatus}</p>}
-                    </div>
-                    
+                <p className="text-brand-brown/90 mb-4">Recommended grind setting for cold brew is <strong>medium-coarse to coarse</strong>.</p>
+                
+                <div className="my-6 flex justify-center">
+                    <img src="/cold-brew-grind.png" alt="A close-up photo showing the ideal coarse grind size for cold brew coffee, similar in texture to coarse sea salt." className="w-full max-w-xs h-auto rounded-lg shadow-md" />
                 </div>
+
+                
+                <form name="grinder-submission" onSubmit={handleGrinderSubmit} data-netlify="true">
+                    <input type="hidden" name="form-name" value="grinder-submission" />
+                    <label className="block text-sm font-medium text-brand-brown/80 mb-1">To help us build a grind size guide, what grinder do you use?</label>
+                    <div className="flex gap-2">
+                        <input type="text" name="grinder" value={grinderInfo} onChange={(e) => setGrinderInfo(e.target.value)} placeholder="e.g., Timemore C3, Baratza Encore" className="w-full p-2 bg-brand-brown/10 rounded-lg border-transparent focus:border-brand-tan focus:ring-0" />
+                        <button type="submit" className="px-4 py-2 bg-brand-tan text-brand-brown font-bold rounded-lg shadow-sm hover:bg-brand-tan/80 transition-colors">Submit</button>
+                    </div>
+                </form>
+                {grinderStatus && <p className="text-sm text-brand-green mt-2">{grinderStatus}</p>}
             </Card>
 
             <Card>
