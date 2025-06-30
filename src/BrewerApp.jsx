@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { trackEvent } from './analytics.js';
+import ColdBrewGuide from './ColdBrewGuide.jsx';
 
 // --- ICONS (Brand Aligned: minimalist, line-style) ---
 const Coffee = (props) => (
@@ -6,9 +8,6 @@ const Coffee = (props) => (
 );
 const Users = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-);
-const Globe = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
 );
 const SlidersHorizontal = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="21" y1="4" x2="14" y2="4" /><line x1="10" y1="4" x2="3" y2="4" /><line x1="21" y1="12" x2="12" y2="12" /><line x1="8" y1="12" x2="3" y2="12" /><line x1="21" y1="20" x2="16" y2="20" /><line x1="12" y1="20" x2="3" y2="20" /><line x1="14" y1="2" x2="14" y2="6" /><line x1="8" y1="10" x2="8" y2="14" /><line x1="16" y1="18" x2="16" y2="22" /></svg>
@@ -116,9 +115,52 @@ function BrewerApp() {
     return () => clearInterval(timerRef.current);
   }, [isTimerRunning, currentStep, currentBloom, brewConfig]);
 
-  const handleStartBrewing = () => { setCurrentStep('brewing'); setCurrentBloom(0); setTimeLeft(brewConfig.bloomTimes[0]); };
-  const handleReset = () => { setCurrentStep('setup'); setIsTimerRunning(false); setTimeLeft(0); setCurrentBloom(0); setChecklist({ grinder: false, kettle: false, scale: false, filter: false, v60: false, server: false }); };
-  const handleCompleteBrew = () => { setPersonalBrews(prev => prev + 1); setCurrentStep('complete'); };
+  const handleStartBrewing = () => { 
+    trackEvent('start_brew', {
+        brew_method: 'iced-v60',
+        coffee_weight: brewConfig.coffeeWeight,
+        is_custom_recipe: useCustomBloom,
+        bloom_count: brewConfig.bloomCount
+    });
+    setCurrentStep('brewing'); 
+    setCurrentBloom(0); 
+    setTimeLeft(brewConfig.bloomTimes[0]); 
+  };
+  
+  const handleReset = () => { 
+    setCurrentStep('setup'); 
+    setIsTimerRunning(false); 
+    setTimeLeft(0); 
+    setCurrentBloom(0); 
+    setChecklist({ grinder: false, kettle: false, scale: false, filter: false, v60: false, server: false }); 
+  };
+
+  const handleCompleteBrew = () => { 
+    trackEvent('complete_brew', {
+        brew_method: 'iced-v60',
+        coffee_weight: brewConfig.coffeeWeight,
+        total_brew_time: brewConfig.bloomTimes.reduce((a, b) => a + b, 0)
+    });
+    setPersonalBrews(prev => prev + 1); 
+    setCurrentStep('complete'); 
+  };
+  
+  const handleSettingChange = (settingName, value) => {
+      trackEvent('customize_recipe', {
+          setting_changed: settingName,
+          new_value: value
+      });
+      setSettings(s => ({...s, [settingName]: value}));
+  };
+  
+  const handleCustomBloomToggle = () => {
+    trackEvent('customize_recipe', {
+      setting_changed: 'use_custom_bloom_plan',
+      new_value: !useCustomBloom
+    });
+    setUseCustomBloom(!useCustomBloom);
+  };
+
   const handleChecklistToggle = (item) => setChecklist(prev => ({...prev, [item]: !prev[item]}));
   const handleCustomBloomCountChange = (newCount) => setCustomBloomConfig(prev => ({ count: newCount, durations: [...prev.durations].slice(0, newCount).concat(Array(Math.max(0, newCount - prev.durations.length)).fill(45)) }));
   const handleCustomBloomDurationChange = (index, newDuration) => setCustomBloomConfig(prev => ({ ...prev, durations: prev.durations.map((d, i) => i === index ? newDuration : d) }));
@@ -141,21 +183,11 @@ function BrewerApp() {
     const showSwirl = timeLeft <= brewConfig.bloomTimes[currentBloom] * 0.6 && timeLeft > 5;
     const showStartButton = currentBloom === 0 && !isTimerRunning;
     const progress = (brewConfig.bloomTimes.slice(0, currentBloom).reduce((a, b) => a + b, 0) + (brewConfig.bloomTimes[currentBloom] - timeLeft)) / brewConfig.bloomTimes.reduce((a, b) => a + b, 0) * 100;
-
-    return (
-        <Card className="text-center">
-            <h2 className="text-2xl font-bold text-brand-brown"> Pour <span className="text-brand-tan">{currentBloom + 1}</span> of {brewConfig.bloomCount} </h2>
-            {showStartButton ? (<div className="my-8 flex flex-col items-center justify-center space-y-4"><p className="text-brand-brown/80 text-lg">Ready for your first pour?</p><div className="w-1/2 mx-auto"> <Button onClick={() => setIsTimerRunning(true)}> Start Bloom </Button> </div></div>) : (<div className="my-6"><div className="relative w-48 h-48 mx-auto"><div className="absolute inset-0 flex flex-col items-center justify-center z-10"><div className={`text-6xl font-mono font-bold ${timeLeft < 10 ? "text-orange-500" : "text-brand-brown"} transition-colors`}>{timeLeft}</div><div className="text-brand-brown/60">seconds left</div></div>{isTimerRunning && (<div className="absolute inset-0 z-20 overflow-hidden pointer-events-none">{[...Array(6)].map((_, i) => (<svg key={i} className="absolute top-0 w-3 h-auto text-brand-tan/50 animate-pour" style={{ left: `${15 + i * 14}%`, animationDelay: `${i * 0.2}s` }} viewBox="0 0 5 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 0V22" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>))}</div>)}<svg className="w-full h-full" viewBox="0 0 36 36" transform='rotate(-90)'><path className="text-brand-brown/10" strokeWidth="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /><path className="text-brand-tan transition-all duration-500" strokeWidth="3" strokeDasharray={`${progress}, 100`} strokeLinecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /></svg></div></div>)}
-            <div className="bg-brand-brown/10 p-4 rounded-lg space-y-2"><p className="text-lg font-semibold text-brand-brown"> Pour <span className="font-bold">{brewConfig.waterPerBloom}g</span> of water. </p><p className="text-brand-brown/80 text-sm"> Pour evenly in a circular motion, from the center outwards. </p>{showSwirl && <div className="flex items-center justify-center text-brand-tan font-semibold animate-pulse pt-2"><svg className="w-5 h-5 mr-2 animate-swirl" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>Gently Swirl the slurry now.</div>}</div>
-            <div className="mt-6"><button onClick={handleReset} className="text-brand-brown/60 hover:text-brand-brown transition-colors"> Cancel and Start Over </button></div>
-        </Card>
-    );
+    return (<Card className="text-center"><h2 className="text-2xl font-bold text-brand-brown"> Pour <span className="text-brand-tan">{currentBloom + 1}</span> of {brewConfig.bloomCount} </h2>{showStartButton ? (<div className="my-8 flex flex-col items-center justify-center space-y-4"><p className="text-brand-brown/80 text-lg">Ready for your first pour?</p><div className="w-1/2 mx-auto"> <Button onClick={() => setIsTimerRunning(true)}> Start Bloom </Button> </div></div>) : (<div className="my-6"><div className="relative w-48 h-48 mx-auto"><div className="absolute inset-0 flex flex-col items-center justify-center z-10"><div className={`text-6xl font-mono font-bold ${timeLeft < 10 ? "text-orange-500" : "text-brand-brown"} transition-colors`}>{timeLeft}</div><div className="text-brand-brown/60">seconds left</div></div>{isTimerRunning && (<div className="absolute inset-0 z-20 overflow-hidden pointer-events-none">{[...Array(6)].map((_, i) => (<svg key={i} className="absolute top-0 w-3 h-auto text-brand-tan/50 animate-pour" style={{ left: `${15 + i * 14}%`, animationDelay: `${i * 0.2}s` }} viewBox="0 0 5 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 0V22" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>))}</div>)}<svg className="w-full h-full" viewBox="0 0 36 36" transform='rotate(-90)'><path className="text-brand-brown/10" strokeWidth="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /><path className="text-brand-tan transition-all duration-500" strokeWidth="3" strokeDasharray={`${progress}, 100`} strokeLinecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /></svg></div></div>)}<div className="bg-brand-brown/10 p-4 rounded-lg space-y-2"><p className="text-lg font-semibold text-brand-brown"> Pour <span className="font-bold">{brewConfig.waterPerBloom}g</span> of water. </p><p className="text-brand-brown/80 text-sm"> Pour evenly in a circular motion, from the center outwards. </p>{showSwirl && <div className="flex items-center justify-center text-brand-tan font-semibold animate-pulse pt-2"><svg className="w-5 h-5 mr-2 animate-swirl" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>Gently Swirl the slurry now.</div>}</div><div className="mt-6"><button onClick={handleReset} className="text-brand-brown/60 hover:text-brand-brown transition-colors"> Cancel and Start Over </button></div></Card>);
   };
-  
   const renderFinishingPhase = () => <Card className="text-center"><h2 className="text-2xl font-bold text-brand-brown mb-4">Brewing Complete!</h2><p className="text-brand-brown/80 mb-6">Let the coffee finish dripping.</p><div className="bg-brand-brown/10 p-4 rounded-lg space-y-3 mb-6"><p className="font-semibold text-lg text-brand-brown">Final Step</p><p className="text-brand-brown/90">Gently swirl the server.</p></div><Button onClick={handleCompleteBrew}>Finish & Enjoy</Button></Card>;
-  
   const renderCompletePhase = () => <Card className="text-center"><div className="w-24 h-24 mx-auto bg-brand-green/80 rounded-full flex items-center justify-center mb-4"><svg className="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg></div><h2 className="text-2xl font-bold text-brand-brown mb-2">Enjoy!</h2><Button onClick={handleReset}>Brew Another</Button></Card>;
-
+  
   const renderBrewAppContent = () => {
     switch(currentStep) {
         case 'brewing': return renderBrewingPhase();
@@ -165,32 +197,32 @@ function BrewerApp() {
         default:
             return renderSetupPhase();
     }
-  }
+  };
 
   const renderSettings = () => (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-brand-brown px-1">Settings & Preferences</h2>
       <Card>
-        <h3 className="text-xl font-bold text-brand-brown mb-4">Brew Ratios</h3>
+        <h3 className="text-xl font-bold text-brand-brown mb-4">Iced V60 Ratios</h3>
         <div className="space-y-6">
             <div>
                 <label className="block text-sm font-medium text-brand-brown/80 mb-1">Default Grams Per Person</label>
                 <div className="flex items-center space-x-4">
-                   <input type="range" min="15" max="25" value={settings.gramsPerPerson} onChange={e => setSettings(s => ({...s, gramsPerPerson: Number(e.target.value)}))} className="w-full h-2 bg-brand-brown/20 rounded-lg appearance-none cursor-pointer accent-brand-green" />
+                   <input type="range" min="15" max="25" value={settings.gramsPerPerson} onChange={e => handleSettingChange('gramsPerPerson', Number(e.target.value))} className="w-full h-2 bg-brand-brown/20 rounded-lg appearance-none cursor-pointer accent-brand-green" />
                    <span className="font-bold text-lg text-brand-brown w-12 text-center">{settings.gramsPerPerson}g</span>
                 </div>
             </div>
             <div>
                 <label className="block text-sm font-medium text-brand-brown/80 mb-1">Coffee-to-Water Ratio (g/L)</label>
                 <div className="flex items-center space-x-4">
-                   <input type="range" min="50" max="80" value={settings.coffeeRatio} onChange={e => setSettings(s => ({...s, coffeeRatio: Number(e.target.value)}))} className="w-full h-2 bg-brand-brown/20 rounded-lg appearance-none cursor-pointer accent-brand-green" />
+                   <input type="range" min="50" max="80" value={settings.coffeeRatio} onChange={e => handleSettingChange('coffeeRatio', Number(e.target.value))} className="w-full h-2 bg-brand-brown/20 rounded-lg appearance-none cursor-pointer accent-brand-green" />
                    <span className="font-bold text-lg text-brand-brown w-12 text-center">{settings.coffeeRatio}</span>
                 </div>
             </div>
             <div>
                 <label className="block text-sm font-medium text-brand-brown/80 mb-1">Water Split (Brew Water %)</label>
                 <div className="flex items-center space-x-4">
-                   <input type="range" min="50" max="70" value={settings.waterSplit} onChange={e => setSettings(s => ({...s, waterSplit: Number(e.target.value)}))} className="w-full h-2 bg-brand-brown/20 rounded-lg appearance-none cursor-pointer accent-brand-green" />
+                   <input type="range" min="50" max="70" value={settings.waterSplit} onChange={e => handleSettingChange('waterSplit', Number(e.target.value))} className="w-full h-2 bg-brand-brown/20 rounded-lg appearance-none cursor-pointer accent-brand-green" />
                    <span className="font-bold text-lg text-brand-brown w-12 text-center">{settings.waterSplit}%</span>
                 </div>
             </div>
@@ -199,9 +231,9 @@ function BrewerApp() {
       <Card>
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold text-brand-brown">Custom Bloom Plan</h3>
-            <Toggle checked={useCustomBloom} onChange={() => setUseCustomBloom(!useCustomBloom)} />
+            <Toggle checked={useCustomBloom} onChange={handleCustomBloomToggle} />
           </div>
-          <p className="text-sm text-brand-brown/80 mb-4">Prefer your own method? Toggle this on to override the automatic recipe and set your own bloom schedule.</p>
+          <p className="text-sm text-brand-brown/80 mb-4">Prefer your own method? Toggle this on to override the automatic recipe.</p>
           {useCustomBloom && (
               <div className="space-y-4 pt-4 border-t border-brand-brown/10">
                   <div>
@@ -225,7 +257,7 @@ function BrewerApp() {
       </Card>
     </div>
   );
-
+  
   const renderInfoPage = () => (
     <div className="space-y-6 text-brand-brown">
         <h2 className="text-2xl font-bold px-1">About & Stats</h2>
@@ -267,30 +299,41 @@ function BrewerApp() {
         <Card>
             <h3 className="text-xl font-bold">Update Log</h3>
             <ul className="list-disc list-inside mt-2 text-brand-brown/80 space-y-1">
+                <li><span className="font-semibold text-brand-brown">v2.6.0 (MVP Launch):</span> Finalized architecture and analytics integration.</li>
                 <li><span className="font-semibold text-brand-brown">v2.5.0 (Final Fix):</span> Corrected navigation logic and restored Info page content.</li>
-                <li><span className="font-semibold text-brand-brown">v2.4.0 (Nav Fix):</span> Corrected navigation logic for settings and info tabs.</li>
-                <li><span className="font-semibold text-brand-brown">v2.3.0 (Community):</span> Added personal brew counter.</li>
-                <li><span className="font-semibold text-brand-brown">v2.2.0 (Platform):</span> Restructured for multiple brew methods.</li>
             </ul>
         </Card>
     </div>
   );
 
-  const renderIcedV60Guide = () => (
-    <div className="space-y-8">
-        <div>
-            <h2 className="text-3xl font-bold text-brand-brown">Iced V60 Pour-Over</h2>
-            <p className="text-brand-brown/80 mt-1">A bright, clean, and complex iced coffee, brewed hot directly over ice to lock in delicate flavors.</p>
+  const renderIcedV60Guide = () => {
+    let content;
+    switch (currentPage) {
+        case 'settings':
+            content = renderSettings();
+            break;
+        case 'info':
+            content = renderInfoPage();
+            break;
+        case 'app':
+        default:
+            content = renderBrewAppContent();
+            break;
+    }
+    
+    return (
+        <div className="pb-20"> {/* Add padding to the bottom to avoid overlap */}
+            <div className="space-y-8">
+                <div>
+                    <h2 className="text-3xl font-bold text-brand-brown">Iced V60 Pour-Over</h2>
+                    <p className="text-brand-brown/80 mt-1">A bright, clean, and complex iced coffee, brewed hot directly over ice to lock in delicate flavors.</p>
+                </div>
+                {content}
+            </div>
+            <div className="fixed bottom-0 left-0 right-0 bg-white/60 backdrop-blur-md border-t border-black/10 shadow-t-sm"><nav className="max-w-lg mx-auto flex justify-around items-center h-20 px-4"><BottomNavItem icon={Coffee} label="Brew" pageName="app" /><BottomNavItem icon={SlidersHorizontal} label="Settings" pageName="settings" /><BottomNavItem icon={Info} label="Info" pageName="info" /></nav></div>
         </div>
-        {
-          {
-            'app': renderBrewAppContent(),
-            'settings': renderSettings(),
-            'info': renderInfoPage()
-          }[currentPage]
-        }
-    </div>
-  );
+    );
+  };
   
   const renderComingSoon = () => (
     <div className="space-y-8">
@@ -300,7 +343,7 @@ function BrewerApp() {
         </div>
         <Card>
             <ul className="space-y-3">
-                {['V60 (Hot)', 'Iced Moka Pot', 'Moka Pot (Hot)', 'Cold Brew'].map(method => (<li key={method} className="p-4 bg-brand-brown/10 rounded-lg font-semibold text-brand-brown/80">{method}</li>))}
+                {['V60 (Hot)', 'Iced Moka Pot', 'Moka Pot (Hot)'].map(method => (<li key={method} className="p-4 bg-brand-brown/10 rounded-lg font-semibold text-brand-brown/80">{method}</li>))}
             </ul>
         </Card>
     </div>
@@ -315,15 +358,17 @@ function BrewerApp() {
   );
 
   return (
-    <div className="container mx-auto max-w-lg p-4 pb-28">
+    <div className="container mx-auto max-w-lg p-4">
         <div className="flex space-x-2 border-b-2 border-brand-brown/10 mb-8">
-            <button onClick={() => setActiveBrewMethod('iced-v60')} className={`font-semibold pb-3 px-4 -mb-0.5 border-b-4 transition-colors ${activeBrewMethod === 'iced-v60' ? 'text-brand-brown border-brand-tan' : 'text-brand-brown/60 border-transparent hover:border-brand-tan/50'}`}>Iced V60</button>
-            <button onClick={() => setActiveBrewMethod('coming-soon')} className={`font-semibold pb-3 px-4 -mb-0.5 border-b-4 transition-colors ${activeBrewMethod === 'coming-soon' ? 'text-brand-brown border-brand-tan' : 'text-brand-brown/60 border-transparent hover:border-brand-tan/50'}`}>More Coming Soon</button>
+            <button onClick={() => { setActiveBrewMethod('iced-v60'); trackEvent('select_brew_method', { brew_method: 'iced-v60' }); }} className={`font-semibold pb-3 px-4 -mb-0.5 border-b-4 transition-colors ${activeBrewMethod === 'iced-v60' ? 'text-brand-brown border-brand-tan' : 'text-brand-brown/60 border-transparent hover:border-brand-tan/50'}`}>Iced V60</button>
+            <button onClick={() => { setActiveBrewMethod('cold-brew'); trackEvent('select_brew_method', { brew_method: 'cold-brew' }); }} className={`font-semibold pb-3 px-4 -mb-0.5 border-b-4 transition-colors ${activeBrewMethod === 'cold-brew' ? 'text-brand-brown border-brand-tan' : 'text-brand-brown/60 border-transparent hover:border-brand-tan/50'}`}>Cold Brew</button>
+            <button onClick={() => { setActiveBrewMethod('coming-soon'); trackEvent('select_brew_method', { brew_method: 'coming-soon' }); }} className={`font-semibold pb-3 px-4 -mb-0.5 border-b-4 transition-colors ${activeBrewMethod === 'coming-soon' ? 'text-brand-brown border-brand-tan' : 'text-brand-brown/60 border-transparent hover:border-brand-tan/50'}`}>More Coming Soon</button>
         </div>
         <main>
-            {activeBrewMethod === 'iced-v60' ? renderIcedV60Guide() : renderComingSoon()}
+            {activeBrewMethod === 'iced-v60' && renderIcedV60Guide()}
+            {activeBrewMethod === 'cold-brew' && <ColdBrewGuide />}
+            {activeBrewMethod === 'coming-soon' && renderComingSoon()}
         </main>
-        <div className="fixed bottom-0 left-0 right-0 bg-white/60 backdrop-blur-md border-t border-black/10 shadow-t-sm"><nav className="max-w-lg mx-auto flex justify-around items-center h-20 px-4"><BottomNavItem icon={Coffee} label="Brew" pageName="app" /><BottomNavItem icon={SlidersHorizontal} label="Settings" pageName="settings" /><BottomNavItem icon={Info} label="Info" pageName="info" /></nav></div>
     </div>
   );
 }
