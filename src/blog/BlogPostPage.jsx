@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import Seo from '../Seo';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { blogPosts } from './blogPosts.js';
@@ -12,13 +12,15 @@ const BlogPostPage = () => {
   if (!post) {
     return (
         <div className="text-center py-20 container mx-auto max-w-5xl p-4">
-            <Helmet><title>Post Not Found | CBA</title></Helmet>
+            <Seo title="Post Not Found | CBA" description="Sorry, we couldn't find the article you were looking for." />
             <h1 className="text-4xl font-bold">Post Not Found</h1>
             <p className="mt-4 text-brand-brown/80">Sorry, we couldn't find the article you were looking for.</p>
         </div>
     );
   }
-  
+
+  const canonicalUrl = `https://coffeebrewingassistant.com/blog/${post.slug}`;
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -32,12 +34,15 @@ const BlogPostPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{`${post.title} | CBA Blog`}</title>
-        <meta name="description" content={post.description} />
-        <script type="application/ld+json">{JSON.stringify(schema)}</script>
-      </Helmet>
-      
+      <Seo
+        title={post.title}
+        description={post.description}
+        canonicalUrl={canonicalUrl}
+        imageUrl={post.featuredImage}
+        type="article"
+        publishedDate={new Date(post.date).toISOString()}
+        schema={schema}
+      />
       <article className="container mx-auto max-w-3xl p-4">
         <header className="text-center mb-12">
           <p className="text-base text-brand-brown/80 mb-2">{post.date}</p>
@@ -55,6 +60,19 @@ const BlogPostPage = () => {
           </ReactMarkdown>
         </div>
         
+        <div className="my-16">
+          <h3 className="text-3xl font-bold text-brand-brown mb-4 text-center">Watch: The Iced Pour-Over Technique</h3>
+          <div className="aspect-video rounded-2xl overflow-hidden shadow-lg bg-black">
+            <iframe 
+              src="https://www.youtube.com/embed/PApBycDrPo0" 
+              title="YouTube video player" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen
+              className="w-full h-full"
+            ></iframe>
+          </div>
+        </div>
       </article>
     </>
   );

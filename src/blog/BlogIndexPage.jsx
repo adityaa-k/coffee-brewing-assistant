@@ -1,15 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import Seo from '../Seo';
 import { blogPosts } from './blogPosts';
 
 const BlogIndexPage = () => {
   return (
     <>
-      <Helmet>
-        <title>Blog | Coffee Brewing Assistant</title>
-        <meta name="description" content="A collection of thoughts, guides, and deep dives into the art and science of coffee from the CBA team." />
-      </Helmet>
+      <Seo
+        title="Blog | Coffee Brewing Assistant"
+        description="A collection of thoughts, guides, and deep dives into the art and science of coffee from the CBA team."
+        canonicalUrl="https://coffeebrewingassistant.com/blog"
+        imageUrl="https://coffeebrewingassistant.com/og-image-blog.png" // Create a specific image for the blog
+      />
       <div className="container mx-auto max-w-5xl p-4 space-y-12">
         <header className="text-center">
           <h1 className="text-5xl font-extrabold text-brand-brown tracking-tight">From the Journal</h1>

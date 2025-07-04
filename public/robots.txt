@@ -2,5 +2,8 @@
 User-agent: *
 Allow: /
 
+User-agent: Google-Extended
+Allow: /
+
 # Sitemap location
 Sitemap: https://coffeebrewingassistant.com/sitemap.xml

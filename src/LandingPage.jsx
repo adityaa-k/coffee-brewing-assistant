@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import Seo from './Seo';
 import content from './landingPageContent.json';
 
 // --- SVG Icons for Landing Page ---
@@ -25,10 +25,12 @@ const featureIcons = {
 const LandingPage = () => {
   return (
     <>
-      <Helmet>
-        <title>Coffee Brewing Assistant | Your Guide to the Perfect Cup</title>
-        <meta name="description" content="Welcome to the Coffee Brewing Assistant. Get adaptive recipes, step-by-step timers, and expert tips for brewing perfect coffee at home." />
-      </Helmet>
+      <Seo
+        title="Coffee Brewing Assistant | Your Guide to the Perfect Cup"
+        description="Welcome to the Coffee Brewing Assistant. Get adaptive recipes, step-by-step timers, and expert tips for brewing perfect coffee at home."
+        canonicalUrl="https://coffeebrewingassistant.com/"
+        imageUrl="https://coffeebrewingassistant.com/og-image.png" // Replace with your main social sharing image URL
+      />
       <div className="container mx-auto max-w-5xl p-4">
         <header className="flex justify-between items-center py-6">
             <h1 className="text-2xl font-extrabold text-brand-brown tracking-tight">
@@ -67,13 +69,6 @@ const LandingPage = () => {
                 })}
             </div>
             </section>
-
-            {/* --- NEW SECTION STARTS HERE --- */}
-            <section className="py-16 text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl font-extrabold text-brand-brown">{content.newSection.title}</h2>
-              <p className="mt-4 text-lg text-brand-brown/80">{content.newSection.paragraph}</p>
-            </section>
-            {/* --- NEW SECTION ENDS HERE --- */}
 
             <section className="py-16">
             <div className="text-center max-w-3xl mx-auto">

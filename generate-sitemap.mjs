@@ -2,7 +2,6 @@ import fs from 'fs';
 import { blogPosts } from './src/blog/blogPosts.js';
 
 const baseUrl = 'https://coffeebrewingassistant.com';
-const today = new Date().toISOString().split('T')[0];
 
 const createApiKeyFile = () => {
   const apiKey = process.env.INDEXNOW_API_KEY;
@@ -12,30 +11,27 @@ const createApiKeyFile = () => {
     return;
   }
 
-  // Ensure the public directory exists
   if (!fs.existsSync('public')) {
     fs.mkdirSync('public');
   }
 
-  // Create the key file in the /public directory. 
-  // The file name is the key itself, and the content is also the key.
   fs.writeFileSync(`public/${apiKey}.txt`, apiKey);
   console.log(`IndexNow API key file created at public/${apiKey}.txt`);
 };
 
 const generateSitemap = () => {
+  const today = new Date().toISOString().split('T')[0];
+
   // Static pages
   const staticPages = [
-    { url: '/', changefreq: 'weekly', priority: '1.0' },
-    { url: '/app', changefreq: 'monthly', priority: '0.8' },
-    { url: '/blog', changefreq: 'weekly', priority: '0.9' },
+    { url: '/', lastmod: today },
+    { url: '/app', lastmod: '2025-07-01' }, // Update this date when you make major app changes
+    { url: '/blog', lastmod: today },
   ];
 
   // Dynamic blog post pages
   const blogPostPages = blogPosts.map(post => ({
     url: `/blog/${post.slug}`,
-    changefreq: 'yearly',
-    priority: '0.7',
     lastmod: new Date(post.date).toISOString().split('T')[0]
   }));
 
@@ -45,13 +41,10 @@ const generateSitemap = () => {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   ${allPages
     .map(page => {
-      const lastmod = page.lastmod ? `<lastmod>${page.lastmod}</lastmod>` : `<lastmod>${today}</lastmod>`;
       return `
   <url>
     <loc>${baseUrl}${page.url}</loc>
-    ${lastmod}
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
+    <lastmod>${page.lastmod}</lastmod>
   </url>`;
     })
     .join('')}
@@ -60,7 +53,6 @@ const generateSitemap = () => {
   fs.writeFileSync('public/sitemap.xml', sitemap);
   console.log('sitemap.xml generated successfully!');
   
-  // Return the list of all URLs for IndexNow
   return allPages.map(page => `${baseUrl}${page.url}`);
 };
 
@@ -80,7 +72,7 @@ const pingIndexNow = async (urlList) => {
   };
 
   try {
-    console.log('Pinging IndexNow API...');
+    console.log('Pinging IndexNow API with all URLs...');
     const response = await fetch('https://api.indexnow.org/indexnow', {
       method: 'POST',
       headers: {
@@ -101,10 +93,9 @@ const pingIndexNow = async (urlList) => {
   }
 };
 
-
-// Main execution
+// Main execution block
 (async () => {
-  createApiKeyFile(); // Create the key file first
+  createApiKeyFile();
   const allUrls = generateSitemap();
   await pingIndexNow(allUrls);
 })();

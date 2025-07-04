@@ -8,18 +8,7 @@ import Header from './Header.jsx';
 import Footer from './Footer.jsx';
 import BlogIndexPage from './blog/BlogIndexPage.jsx';
 import BlogPostPage from './blog/BlogPostPage.jsx';
-
-// Data Layer Helper Function
-const trackEvent = (eventName, data) => {
-  if (typeof window.dataLayer !== 'undefined') {
-    window.dataLayer.push({
-      event: eventName,
-      ...data,
-    });
-  } else {
-    console.log(`DataLayer not found. Event: ${eventName}`, data);
-  }
-};
+import { trackEvent } from './analytics.js';
 
 // This component will listen for route changes and fire analytics events.
 const AnalyticsTracker = () => {
@@ -36,7 +25,10 @@ const AnalyticsTracker = () => {
             destination = 'app';
         }
 
-        trackEvent('navigation', { destination: destination });
+        trackEvent('navigation', { 
+            destination: destination,
+            page_path: location.pathname 
+        });
 
     }, [location.pathname]); // Fire event whenever the pathname changes
 
